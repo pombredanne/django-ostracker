@@ -1,9 +1,10 @@
 import time, datetime
 from django.core.management.base import NoArgsCommand
-from github import Github, GithubApiError
+from ostracker.github import Github, GithubApiError
 from ostracker.models import Project, ProjectStatus
 
 SAMPLE_RATE = 7
+GITHUB_REST = 5
 
 class Command(NoArgsCommand):
     help = 'Updates latest project information from github'
@@ -37,4 +38,4 @@ class Command(NoArgsCommand):
                     tagged_releases = num_releases)
                 print 'getting latest status for %s' % p
 
-            time.sleep(7)
+            time.sleep(GITHUB_REST)

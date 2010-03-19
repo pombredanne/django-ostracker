@@ -1,6 +1,6 @@
 import time
 from django.core.management.base import BaseCommand
-from github import Github
+from ostracker.github import Github
 from ostracker.models import Project
 
 class Command(BaseCommand):
