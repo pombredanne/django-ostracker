@@ -1,13 +1,19 @@
 import datetime
 from django.db import models
 
+PROJECT_HOSTS = (
+    ('none', 'none'),
+    ('github', 'github'),
+)
+
 class Project(models.Model):
     name = models.CharField(max_length=100)
     username = models.CharField(max_length=100, blank=True)
+    host_site = models.CharField(max_length=10)
     description = models.CharField(max_length=200)
     url = models.URLField()
     latest_commit = models.DateField()
-    created_date = models.DateField()
+    created_date = models.DateField(default=datetime.datetime.now)
     language = models.CharField(max_length=30)
 
     @property
@@ -21,7 +27,10 @@ class Project(models.Model):
         return self._latest_status
 
     def __unicode__(self):
-        return '/'.join((self.username, self.name))
+        if self.username:
+            return '/'.join((self.username, self.name))
+        else:
+            return self.name
 
 class ProjectStatus(models.Model):
     project = models.ForeignKey(Project, related_name='statuses')

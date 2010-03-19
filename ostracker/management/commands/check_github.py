@@ -30,6 +30,7 @@ class Command(BaseCommand):
                               defaults={'description':repo.description,
                                         'latest_commit':latest_commit,
                                         'created_date':'2000-01-01',
+                                        'host_site': 'github',
                                         'language':'?', })
 
                 if created:

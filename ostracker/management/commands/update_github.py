@@ -12,7 +12,7 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         gh = Github()
 
-        for p in Project.objects.all():
+        for p in Project.objects.filter(host_site='github'):
             last_status = p.latest_status
             if not last_status or (datetime.date.today() - last_status.status_date) >= datetime.timedelta(SAMPLE_RATE):
 
