@@ -1,0 +1,35 @@
+
+<table>
+<thead>
+    <tr>
+        <th>Project</th>
+        <th>Open Issues</th>
+        <th>Closed Issues</th>
+        <th>New Forks</th>
+        <th>New Collaborators</th>
+        <th>New Watchers</th>
+        <th>New Releases</th>
+    </tr>
+</thead>
+{% for a in activity %}
+<tr>
+    <td>{{a.project}}</td>
+    <td>{{a.new_open_issues}}</td>
+    <td>{{a.new_closed_issues}}</td>
+    <td>{{a.new_forks}}</td>
+    <td>{{a.new_collaborators}}</td>
+    <td>{{a.new_watchers}}</td>
+    <td>{{a.new_tagged_releases}}</td>
+</tr>
+{% endfor %}
+
+<tr>
+    <td>totals</td>
+    <td>{{totals.new_open_issues}}</td>
+    <td>{{totals.new_closed_issues}}</td>
+    <td>{{totals.new_forks}}</td>
+    <td>{{totals.new_collaborators}}</td>
+    <td>{{totals.new_watchers}}</td>
+    <td>{{totals.new_tagged_releases}}</td>
+</tr>
+</table>

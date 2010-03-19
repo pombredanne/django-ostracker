@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="{{ MEDIA_URL }}jquery.min.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}highcharts.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}excanvas.compiled.js" type="text/javascript"></script>
+</head>
+<body>
+<h1>{{project.name}}</h1>
+
+<dl>
+    <dt>Description</dt> <dd>{{project.description}}</dd>
+    <dt>URL</dt> <dd><a href="{{project.url}}">{{project.url}}</a></dd>
+    <dt>Latest Commit</dt> <dd>{{project.latest_commit}}</dd>
+</dl>
+
+<div id="issues" style="width: 600px; height:300px;">
+</div>
+
+<div id="people" style="width: 600px; height:300px;">
+</div>
+
+<script>
+$(document).ready(function() {
+
+var chart = new Highcharts.Chart({
+   chart: {
+      renderTo: 'issues',
+      defaultSeriesType: 'area'
+   },
+   title: { text: 'Issues' },
+   xAxis: {
+      categories: {{status_dates|safe}},
+      tickmarkPlacement: 'on',
+      title: { enabled: false }
+   },
+   yAxis: {
+      title: { text: '' },
+      labels: {
+         formatter: function() {
+            return this.value;
+         }
+      }
+   },
+   tooltip: {
+      formatter: function() {
+         return '<b>'+ this.series.name +'</b><br/>'+
+             this.x +': '+ Highcharts.numberFormat(this.y, 0, ',');
+      }
+   },
+   plotOptions: {
+      area: {
+         stacking: 'normal',
+         lineColor: '#666666',
+         lineWidth: 1,
+         marker: {
+            lineWidth: 1,
+            lineColor: '#666666'
+         }
+      }
+   },
+   series: [{
+      name: 'open issues',
+      data: {{open_issues}}
+   }, {
+      name: 'closed issues',
+      data: {{closed_issues}}
+   }]
+});
+
+var chart2 = new Highcharts.Chart({
+   chart: {
+      renderTo: 'people',
+      defaultSeriesType: 'line',
+      margin: [50, 150, 60, 80]
+   },
+   title: {
+      text: 'People',
+      style: {
+         margin: '10px 100px 0 0' // center it
+      }
+   },
+   xAxis: {
+      categories: {{status_dates|safe}},
+      title: { text: 'Month' }
+   },
+   yAxis: {
+      plotLines: [{
+         value: 0,
+         width: 1,
+         color: '#808080'
+      }]
+   },
+   tooltip: {
+      formatter: function() {
+                return '<b>'+ this.series.name +'</b><br/>'+ this.x +': '+ this.y;
+      }
+   },
+   legend: {
+      layout: 'vertical',
+      style: {
+         left: 'auto',
+         bottom: 'auto',
+         right: '10px',
+         top: '100px'
+      }
+   },
+   series: [{
+      name: 'forks',
+      data: {{forks}}
+   }, {
+      name: 'watchers',
+      data: {{watchers}}
+   }, {
+      name: 'collaborators',
+      data: {{collaborators}}
+   }]
+});
+
+});
+
+</script>
+
+</body>
+</html>
