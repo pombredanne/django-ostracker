@@ -39,6 +39,7 @@ class ProjectStatus(models.Model):
 class Contributor(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
+    # aliases field is used for dumb reconciliation of names
     aliases = models.TextField()
 
 class Commit(models.Model):
@@ -51,3 +52,6 @@ class Commit(models.Model):
     files = models.IntegerField()
     insertions = models.IntegerField()
     lines = models.IntegerField()
+
+    def __unicode__(self):
+        return '%s: %s' % (self.id, self.message)

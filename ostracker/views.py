@@ -37,7 +37,7 @@ def summary(request):
     context =  {'cumulative':cumulative, 'by_lang':dict(by_lang)}
     context.update(_get_statuses(ProjectStatus.objects.all()))
 
-    return render_to_response('summary.html', context,
+    return render_to_response('ostracker/summary.html', context,
                              context_instance=RequestContext(request))
 
 def activity(request):
@@ -72,12 +72,12 @@ def activity(request):
             if k != 'project':
                 totals[k] += v
 
-    return render_to_response('activity.html', {'activity': info, 'totals': totals},
+    return render_to_response('ostracker/activity.html', {'activity': info, 'totals': totals},
                               context_instance=RequestContext(request))
 
 def projects(request):
     projects = Project.objects.all().order_by('name')
-    return render_to_response('projects.html', {'projects':projects},
+    return render_to_response('ostracker/projects.html', {'projects':projects},
                              context_instance=RequestContext(request))
 
 def project(request, name):
@@ -86,5 +86,5 @@ def project(request, name):
     context = {'project': project}
     context.update(_get_statuses(project.statuses))
 
-    return render_to_response('project.html', context,
+    return render_to_response('ostracker/project.html', context,
                              context_instance=RequestContext(request))
