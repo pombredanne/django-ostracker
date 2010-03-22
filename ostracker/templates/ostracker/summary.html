@@ -26,16 +26,9 @@
 $(document).ready(function() {
 
 var piechart = new Highcharts.Chart({
-   chart: {
-      renderTo: 'languages',
-   },
-   title: {
-      text: 'Projects by Language'
-   },
-   plotArea: {
-      borderWidth: null,
-      backgroundColor: null
-   },
+   chart: { renderTo: 'languages', },
+   title: { text: 'Projects by Language' },
+   plotArea: { borderWidth: null, backgroundColor: null },
    tooltip: {
       formatter: function() {
          return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
@@ -44,26 +37,19 @@ var piechart = new Highcharts.Chart({
    plotOptions: {
       pie: {
          dataLabels: {
-            enabled: true,
+            enabled: true, color: 'white',
             formatter: function() {
                 if (this.y > 5) {
                     return this.point.name;
                 }
             },
-            color: 'white',
          }
       }
    },
-   legend: {
-      layout: 'vertical',
-      style: {
-         left: 'auto',
-         bottom: 'auto',
-      }
-   },
+   legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', } },
+   credits: { enabled: false },
    series: [{
-      type: 'pie',
-      name: 'language share',
+      type: 'pie', name: 'language share',
       data: [
       {% for lang, num in by_lang.items %}
       ["{{lang}}", {{num}}] {% if not forloop.last %} , {% endif %}
@@ -73,10 +59,7 @@ var piechart = new Highcharts.Chart({
 });
 
 var chart = new Highcharts.Chart({
-   chart: {
-      renderTo: 'timeline',
-      zoomType: 'x'
-   },
+   chart: { renderTo: 'timeline', zoomType: 'x' },
    title: { text: 'Projects' },
    xAxis: {
       title: { text: 'Month' },
@@ -107,13 +90,9 @@ var chart = new Highcharts.Chart({
 });
 
 var chart = new Highcharts.Chart({
-   chart: {
-      renderTo: 'issues',
-      defaultSeriesType: 'area'
-   },
-   title: {
-      text: 'Issues'
-   },
+   chart: { renderTo: 'issues', defaultSeriesType: 'area' },
+   title: { text: 'Issues' },
+   credits: { enabled: false },
    xAxis: {
       categories: {{status_dates|safe}},
       tickmarkPlacement: 'on',
@@ -122,9 +101,7 @@ var chart = new Highcharts.Chart({
       }
    },
    yAxis: {
-      title: {
-         text: ''
-      },
+      title: { enabled: false },
       labels: {
          formatter: function() {
             return this.value;
@@ -137,6 +114,7 @@ var chart = new Highcharts.Chart({
              this.x +': '+ Highcharts.numberFormat(this.y, 0, ',');
       }
    },
+   credits: { enabled: false },
    plotOptions: {
       area: {
          stacking: 'normal',
@@ -148,65 +126,30 @@ var chart = new Highcharts.Chart({
          }
       }
    },
-   series: [{
-      name: 'open issues',
-      data: {{open_issues}}
-   }, {
-      name: 'closed issues',
-      data: {{closed_issues}}
-   }]
+   series: [
+       { name: 'open issues', data: {{open_issues}} },
+       { name: 'closed issues', data: {{closed_issues}} }
+   ]
 });
 
 var chart2 = new Highcharts.Chart({
-   chart: {
-      renderTo: 'people',
-      defaultSeriesType: 'line',
-      margin: [50, 150, 60, 80]
-   },
-   title: {
-      text: 'People',
-      style: {
-         margin: '10px 100px 0 0' // center it
-      }
-   },
-   xAxis: {
-      categories: {{status_dates|safe}},
-      title: {
-         text: 'Month'
-      }
-   },
-   yAxis: {
-      plotLines: [{
-         value: 0,
-         width: 1,
-         color: '#808080'
-      }]
-   },
+   chart: { renderTo: 'people', defaultSeriesType: 'line', margin: [50, 150, 60, 80] },
+   title: { text: 'People', style: { margin: '10px 100px 0 0' } },
+   xAxis: { categories: {{status_dates|safe}}, title: { text: 'Month' } },
+   yAxis: { plotLines: [{ value: 0, width: 1, color: '#808080' }], title: { enabled: false } },
    tooltip: {
       formatter: function() {
                 return '<b>'+ this.series.name +'</b><br/>'+
             this.x +': '+ this.y;
       }
    },
-   legend: {
-      layout: 'vertical',
-      style: {
-         left: 'auto',
-         bottom: 'auto',
-         right: '10px',
-         top: '100px'
-      }
-   },
-   series: [{
-      name: 'forks',
-      data: {{forks}}
-   }, {
-      name: 'watchers',
-      data: {{watchers}}
-   }, {
-      name: 'collaborators',
-      data: {{collaborators}}
-   }]
+   legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', right: '10px', top: '100px' } },
+   credits: { enabled: false },
+   series: [
+       { name: 'forks', data: {{forks}} },
+       { name: 'watchers', data: {{watchers}} },
+       { name: 'collaborators', data: {{collaborators}} }
+   ]
 });
 
 });
