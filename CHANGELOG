@@ -4,6 +4,8 @@ django-ostracker changelog
 
 0.2.0
 =====
+    - make fewer assumptions that all projects use github
+    - remove dependency on _cumulative_by_date from locksmith
 
 0.1.0
 =====

@@ -2,7 +2,6 @@ from collections import defaultdict
 from django.db.models import Sum
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from locksmith.hub.views import _cumulative_by_date
 from ostracker.models import Project, ProjectStatus
 
 def _get_statuses(qs):
@@ -25,6 +24,21 @@ def _get_statuses(qs):
         c['watchers'].append(s['watchers'])
         c['collaborators'].append(s['collaborators'])
     return c
+
+def _cumulative_by_date(model, datefield):
+    by_date = defaultdict(int)
+    first_date = None
+    for obj in model.objects.all().order_by(datefield):
+        if not first_date:
+            first_date = getattr(obj, datefield).replace(day=1)
+        by_date[getattr(obj, datefield).strftime('%Y-%m')] += 1
+    cumulative = [[None, 0]]
+    d = first_date
+    for i,k in enumerate(sorted(by_date.iterkeys())):
+        cumulative.append((d, by_date[k] + cumulative[i][1]))
+        d += datetime.timedelta(31)
+
+    return cumulative[1:]
 
 def summary(request):
     by_lang = defaultdict(int)
