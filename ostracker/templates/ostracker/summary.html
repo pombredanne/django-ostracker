@@ -6,17 +6,15 @@
 {% block content %}
 <h1>Summary</h1>
 
-<div id="languages" style="width: 400px; height:300px;">
-</div>
+<div id="languages" style="width: 400px; height:300px;"> </div>
 
-<div id="timeline" style="width: 600px; height:300px;">
-</div>
+<div id="timeline" style="width: 600px; height:300px;"> </div>
 
-<div id="issues" style="width: 600px; height:300px;">
-</div>
+<a href="{% url projects %}">view all projects</a>
 
-<div id="people" style="width: 600px; height:300px;">
-</div>
+<div id="issues" style="width: 600px; height:300px;"> </div>
+
+<div id="people" style="width: 600px; height:300px;"> </div>
 {% endblock content %}
 
 {% block extrahead %}
@@ -28,8 +26,9 @@ var piechart = new Highcharts.Chart({
    title: { text: 'Projects by Language' },
    plotArea: { borderWidth: null, backgroundColor: null },
    tooltip: {
-      formatter: function() {
-         return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+       formatter: function() {
+           console.log(this);
+         return '<b>'+ this.point.name +'</b>: '+ this.y +' projects';
       }
    },
    plotOptions: {
@@ -137,8 +136,7 @@ var chart2 = new Highcharts.Chart({
    yAxis: { plotLines: [{ value: 0, width: 1, color: '#808080' }], title: { enabled: false } },
    tooltip: {
       formatter: function() {
-                return '<b>'+ this.series.name +'</b><br/>'+
-            this.x +': '+ this.y;
+        return '<b>'+ this.series.name +'</b><br/>'+ this.x +': '+ this.y;
       }
    },
    legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', right: '10px', top: '100px' } },

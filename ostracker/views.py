@@ -56,7 +56,7 @@ def summary(request):
                              context_instance=RequestContext(request))
 
 def activity(request):
-    dates = list(ProjectStatus.objects.dates('status_date', 'day')[:5])
+    dates = list(ProjectStatus.objects.dates('status_date', 'day'))
     old_date = dates[-5]
     new_date = dates[-1]
     old_statuses = ProjectStatus.objects.filter(status_date=old_date).select_related()
@@ -87,7 +87,10 @@ def activity(request):
             if k != 'project':
                 totals[k] += v
 
-    return render_to_response('ostracker/activity.html', {'activity': info, 'totals': totals},
+    return render_to_response('ostracker/activity.html', {'activity': info,
+                                                          'totals': totals,
+                                                          'start_date': old_date,
+                                                          'end_date': new_date},
                               context_instance=RequestContext(request))
 
 def projects(request):

@@ -1,11 +1,15 @@
 {% extends "ostracker/base.html" %}
+
 {% block content %}
-<table>
+
+<h1>Activity from {{start_date|date:"Y-m-d"}} to {{end_date|date:"Y-m-d"}}</h1>
+
+<table id="activity">
 <thead>
     <tr>
         <th>Project</th>
-        <th>Open Issues</th>
-        <th>Closed Issues</th>
+        <th>New Open Issues</th>
+        <th>New Closed Issues</th>
         <th>New Forks</th>
         <th>New Collaborators</th>
         <th>New Watchers</th>
@@ -14,7 +18,7 @@
 </thead>
 {% for a in activity %}
 <tr>
-    <td>{{a.project}}</td>
+    <td><a href="{% url project a.project %}">{{a.project}}</a></td>
     <td>{{a.new_open_issues}}</td>
     <td>{{a.new_closed_issues}}</td>
     <td>{{a.new_forks}}</td>
