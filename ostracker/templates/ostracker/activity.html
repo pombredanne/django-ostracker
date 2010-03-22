@@ -1,4 +1,5 @@
-
+{% extends "ostracker/base.html" %}
+{% block content %}
 <table>
 <thead>
     <tr>
@@ -33,3 +34,5 @@
     <td>{{totals.new_tagged_releases}}</td>
 </tr>
 </table>
+
+{% endblock content %}

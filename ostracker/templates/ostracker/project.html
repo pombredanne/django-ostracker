@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="{{ MEDIA_URL }}jquery.min.js" type="text/javascript"></script>
-    <script src="{{ MEDIA_URL }}highcharts.js" type="text/javascript"></script>
-    <script src="{{ MEDIA_URL }}excanvas.compiled.js" type="text/javascript"></script>
-</head>
-<body>
+{% extends "ostracker/base.html" %}
+
+{% block content %}
 <h1>{{project.name}}</h1>
 
 <dl>
@@ -19,7 +14,9 @@
 
 <div id="people" style="width: 600px; height:300px;">
 </div>
+{% endblock %}
 
+{% block extrahead %}
 <script>
 $(document).ready(function() {
 
@@ -120,6 +117,4 @@ var chart2 = new Highcharts.Chart({
 });
 
 </script>
-
-</body>
-</html>
+{% endblock %}
