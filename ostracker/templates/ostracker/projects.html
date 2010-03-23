@@ -1,6 +1,7 @@
 {% extends "ostracker/base.html" %}
 
 {% block extrahead %}
+{{ block.super }}
 <script type="text/javascript">
     $(document).ready(function() {
         $('#projects').tablesorter();

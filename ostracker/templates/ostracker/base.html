@@ -1,16 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{% block title %} {% endblock %}</title>
-    <script src="{{ MEDIA_URL }}jquery.min.js" type="text/javascript"></script>
-    <script src="{{ MEDIA_URL }}highcharts.js" type="text/javascript"></script>
-    <script src="{{ MEDIA_URL }}excanvas.compiled.js" type="text/javascript"></script>
+{% extends "base.html" %}
+
+{% block extrahead %}
+    <script src="{{ MEDIA_URL }}scripts/jquery.min.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}scripts/highcharts.js" type="text/javascript"></script>
+    <script src="{{ MEDIA_URL }}scripts/excanvas.compiled.js" type="text/javascript"></script>
     <script type="text/javascript" charset="utf-8" src="http://assets.sunlightlabs.com/site3/scripts/jquery.tablesorter.min.js"></script>
-    {% block extrahead %}
-    {% endblock extrahead %}
-</head>
-<body>
-    {% block content %}
-    {% endblock content %}
-</body>
-</html>
+{% endblock extrahead %}
+
