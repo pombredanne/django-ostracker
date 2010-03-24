@@ -4,17 +4,49 @@
 {% block title %}Summary{% endblock %}
 
 {% block content %}
-<h1>Summary</h1>
+<h2>Summary</h2>
 
 <div id="languages" style="width: 400px; height:300px;"> </div>
 
 <div id="timeline" style="width: 600px; height:300px;"> </div>
 
-<a href="{% url projects %}">view all projects</a>
-
 <div id="issues" style="width: 600px; height:300px;"> </div>
 
 <div id="people" style="width: 600px; height:300px;"> </div>
+
+
+<table id="projects">
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Created Date</th>
+    <th>Latest Commit</th>
+    <th>Language</th>
+    <th>Open Issues</th>
+    <th>Closed Issues</th>
+    <th>Forks</th>
+    <th>Watchers</th>
+    <th>Collaborators</th>
+    <th>Tags</th>
+</tr>
+</thead>
+<tbody>
+{% for proj in projects %}
+<tr>
+    <td><a href="{% url project proj.name %}">{{proj.name}}</a></td>
+    <td>{{proj.created_date}}</td>
+    <td>{{proj.latest_commit}}</td>
+    <td>{{proj.language}}</td>
+    <td>{{proj.latest_status.open_issues}}</td>
+    <td>{{proj.latest_status.closed_issues}}</td>
+    <td>{{proj.latest_status.forks}}</td>
+    <td>{{proj.latest_status.watchers}}</td>
+    <td>{{proj.latest_status.collaborators}}</td>
+    <td>{{proj.latest_status.tagged_releases}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
 {% endblock content %}
 
 {% block extrahead %}
@@ -152,4 +184,10 @@ var chart2 = new Highcharts.Chart({
 });
 
 </script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#projects').tablesorter();
+    });
+</script> 
 {% endblock extrahead %}
