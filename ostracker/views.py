@@ -56,6 +56,32 @@ def summary(request):
     return render_to_response('ostracker/summary.html', context,
                              context_instance=RequestContext(request))
 
+def index(request):
+    month_ago = datetime.date.today()-datetime.timedelta(30)
+    year_ago = datetime.date.today()-datetime.timedelta(365)
+
+    active = 0
+    proj_month = 0
+    proj_year = 0
+    projects = list(Project.objects.all().order_by('name'))
+    for proj in projects:
+        if proj.created_date > month_ago:
+            proj_month += 1
+        if proj.created_date > year_ago:
+            proj_year += 1
+        if proj.latest_commit > month_ago:
+            active += 1
+    projects_total = len(projects)
+
+    context =  {'projects': projects,
+                'projects_total': projects_total,
+                'projects_month': proj_month,
+                'projects_year': proj_year,
+               }
+
+    return render_to_response('ostracker/index.html', context,
+                             context_instance=RequestContext(request))
+
 def activity(request):
     dates = list(ProjectStatus.objects.dates('status_date', 'day'))
     old_date = dates[-5]

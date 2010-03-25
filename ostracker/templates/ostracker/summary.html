@@ -14,39 +14,6 @@
 
 <div id="people" style="width: 600px; height:300px;"> </div>
 
-
-<table id="projects">
-<thead>
-<tr>
-    <th>Name</th>
-    <th>Created Date</th>
-    <th>Latest Commit</th>
-    <th>Language</th>
-    <th>Open Issues</th>
-    <th>Closed Issues</th>
-    <th>Forks</th>
-    <th>Watchers</th>
-    <th>Collaborators</th>
-    <th>Tags</th>
-</tr>
-</thead>
-<tbody>
-{% for proj in projects %}
-<tr>
-    <td><a href="{% url project proj.name %}">{{proj.name}}</a></td>
-    <td>{{proj.created_date}}</td>
-    <td>{{proj.latest_commit}}</td>
-    <td>{{proj.language}}</td>
-    <td>{{proj.latest_status.open_issues}}</td>
-    <td>{{proj.latest_status.closed_issues}}</td>
-    <td>{{proj.latest_status.forks}}</td>
-    <td>{{proj.latest_status.watchers}}</td>
-    <td>{{proj.latest_status.collaborators}}</td>
-    <td>{{proj.latest_status.tagged_releases}}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
 {% endblock content %}
 
 {% block extrahead %}
@@ -54,16 +21,18 @@
 <script>
 $(document).ready(function() {
 
-var piechart = new Highcharts.Chart({
-   chart: { renderTo: 'languages', },
+var languages = new Highcharts.Chart({
+   chart: { renderTo: 'languages', defaultSeriesType: 'column' },
    title: { text: 'Projects by Language' },
-   plotArea: { borderWidth: null, backgroundColor: null },
    tooltip: {
        formatter: function() {
-           console.log(this);
-         return '<b>'+ this.point.name +'</b>: '+ this.y +' projects';
+         return '<b>'+ this.x +'</b>: '+ this.y +' projects';
       }
-   },
+  },
+  xAxis: {
+      categories: [{% for k in by_lang.keys %} '{{k}}' {% if not forloop.last %},{%endif%}{%endfor%}]
+  },
+  yAxis: { min: 0, title: { enabled: false } },
    plotOptions: {
       pie: {
          dataLabels: {
@@ -76,15 +45,11 @@ var piechart = new Highcharts.Chart({
          }
       }
    },
-   legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', } },
+   legend: { enabled: false },
    credits: { enabled: false },
    series: [{
-      type: 'pie', name: 'language share',
-      data: [
-      {% for lang, num in by_lang.items %}
-      ["{{lang}}", {{num}}] {% if not forloop.last %} , {% endif %}
-      {% endfor %}
-      ]
+      name: 'language share',
+      data: {{by_lang.values}}
    }]
 });
 
@@ -118,6 +83,7 @@ var chart = new Highcharts.Chart({
        ]
     }]
 });
+
 
 var chart = new Highcharts.Chart({
    chart: { renderTo: 'issues', defaultSeriesType: 'area' },
