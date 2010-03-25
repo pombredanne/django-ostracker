@@ -45,11 +45,53 @@ class ProjectStatus(models.Model):
     def __unicode__(self):
         return '%s status for %s' % (self.status_date, self.project)
 
+class ContributorManager(models.Manager):
+
+    def lookup(self, name, email):
+        alias = '%s <%s>' % (name, email)
+        try:
+            c = Contributor.objects.get(aliases__icontains=alias)
+        except Contributor.DoesNotExist:
+            c = Contributor.objects.create(name=name, email=email,
+                                           aliases=alias)
+        return c
+
 class Contributor(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     # aliases field is used for dumb reconciliation of names
     aliases = models.TextField()
+
+    objects = ContributorManager()
+
+    def __unicode__(self):
+        return '%s <%s>' % (self.name, self.email)
+
+    def merge(self, *children):
+        aliases = ['%s <%s>' % (child.name, child.email) for child in children]
+        self.aliases += ' ' + ' '.join(aliases)
+        self.save()
+
+        # loop over children replacing all reverse relationships
+        for child in children:
+            for ro in child._meta.get_all_related_objects():
+
+                # get reverse queryset
+                related_objects = getattr(child, ro.get_accessor_name()).all()
+
+                # for each item in reverse queryset replace var_name with self
+                for obj in related_objects:
+                    #print '%s.%s = %s' % (obj, ro.var_name, self)
+                    setattr(obj, ro.var_name, self)
+
+            for m2m in child._meta.get_all_related_many_to_many_objects():
+                all_related = getattr(child, m2m.get_accessor_name()).all()
+
+                for obj in all_related:
+                    #print '%s.%s.add(%s)' % (obj, m2m.field.name, self)
+                    getattr(obj, m2m.field.name).add(self)
+
+            child.delete()
 
 class Commit(models.Model):
     id = models.CharField(max_length=40, primary_key=True)

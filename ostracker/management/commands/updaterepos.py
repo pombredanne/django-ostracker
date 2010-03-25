@@ -39,13 +39,7 @@ class Command(NoArgsCommand):
                             cdate.tm_mon, cdate.tm_mday, cdate.tm_hour,
                             cdate.tm_min, cdate.tm_sec)
 
-                    try:
-                        alias = '%s <%s> ' % (c.author.name, c.author.email)
-                        author = Contributor.objects.get(aliases__icontains=alias)
-                    except Contributor.DoesNotExist:
-                        author = Contributor.objects.create(name=c.author.name,
-                                                       email=c.author.email,
-                                                       aliases=alias)
+                    author = Contributor.objects.lookup(c.author.name, c.author.email)
 
                     Commit.objects.create(id=c.id, project=proj, author=author,
                                           message=c.message, time_committed=time,
