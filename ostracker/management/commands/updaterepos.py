@@ -7,12 +7,11 @@ from ostracker.models import Project, Commit, Contributor
 
 class Command(NoArgsCommand):
     help = 'Update all Projects'
-    requires_model_validation = False
 
     def handle_noargs(self, **options):
         projects = Project.objects.all()
         for proj in projects:
-            proj_dir = os.path.join(settings.BASE_PROJECT_DIR, proj.name)
+            proj_dir = proj.get_local_repo_dir()
 
             # checkout or update project
             if not os.path.exists(proj_dir):

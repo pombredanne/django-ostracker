@@ -1,4 +1,6 @@
 import datetime
+import os
+from django.conf import settings
 from django.db import models
 
 PROJECT_HOSTS = (
@@ -26,11 +28,16 @@ class Project(models.Model):
             self._latest_status = status
         return self._latest_status
 
+    def get_local_repo_dir(self):
+        return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.username or '',
+                            self.name)
+
     def __unicode__(self):
         if self.username:
             return '/'.join((self.username, self.name))
         else:
             return self.name
+
 
 class ProjectStatus(models.Model):
     project = models.ForeignKey(Project, related_name='statuses')
