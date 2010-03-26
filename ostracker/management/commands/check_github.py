@@ -34,7 +34,7 @@ class Command(BaseCommand):
                                         'language':'?', })
 
                 if created:
-                    print 'Created Project for %s' % repo.name
+                    print 'Created Project for %s' % repo
                     results = gh.repos.search(repo.name)
                     for result in results:
                         if result.username == username:

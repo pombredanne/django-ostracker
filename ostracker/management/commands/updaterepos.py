@@ -15,11 +15,11 @@ class Command(NoArgsCommand):
 
             # checkout or update project
             if not os.path.exists(proj_dir):
-                print 'cloning %s' % proj.name
-                os.system('git clone -q -n git://github.com/%s/%s.git %s' % (
+                print 'cloning %s' % proj
+                os.system('git clone -q git://github.com/%s/%s.git %s' % (
                     proj.username, proj.name, proj_dir))
             else:
-                print 'updating %s' % proj.name
+                print 'updating %s' % proj
                 os.system('cd %s && git pull -q' % proj_dir)
 
             # process new commits
@@ -46,4 +46,4 @@ class Command(NoArgsCommand):
                                           files=stats['files'],
                                           insertions=stats['insertions'],
                                           lines=stats['lines'])
-            print 'added %s commits to %s' % (added, proj.name)
+            print 'added %s commits to %s' % (added, proj)
