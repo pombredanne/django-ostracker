@@ -14,6 +14,7 @@ class Command(BaseCommand):
 
         if projects:
             all_repos = [gh.repos.get(username, p) for p in projects]
+            # if a project is specified directly process it even if it is a fork
             process_forks = True
         else:
             all_repos = gh.repos.for_user(username)
@@ -34,7 +35,8 @@ class Command(BaseCommand):
                                         'language':'?', })
 
                 if created:
-                    print 'Created Project for %s' % repo
+                    print 'Created Project for %s' % p
+                    # only way to find created date / language are from search
                     results = gh.repos.search(repo.name)
                     for result in results:
                         if result.username == username:

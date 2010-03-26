@@ -1,7 +1,6 @@
 import os
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
-# requires pythongit
 from git import Repo
 from ostracker.models import Project, Commit, Contributor
 
@@ -16,8 +15,8 @@ class Command(NoArgsCommand):
             # checkout or update project
             if not os.path.exists(proj_dir):
                 print 'cloning %s' % proj
-                os.system('git clone -q git://github.com/%s/%s.git %s' % (
-                    proj.username, proj.name, proj_dir))
+                os.system('git clone -q %s %s' % (proj.get_remote_repo_url(),
+                                                  proj_dir))
             else:
                 print 'updating %s' % proj
                 os.system('cd %s && git pull -q' % proj_dir)

@@ -28,6 +28,13 @@ class Project(models.Model):
             self._latest_status = status
         return self._latest_status
 
+    def get_remote_repo_url(self):
+        remote_paths = {'github':'git://github.com/%(username)s/%(name)s.git'}
+
+        path = remote_paths.get(self.host_site, None)
+        if path:
+            return path % self.__dict__
+
     def get_local_repo_dir(self):
         return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.username or '',
                             self.name)
