@@ -56,6 +56,19 @@ def summary(request):
     return render_to_response('ostracker/summary.html', context,
                              context_instance=RequestContext(request))
 
+def _accumulate_statuses(proj):
+    attrs = ['open_issues', 'closed_issues', 'forks', 'watchers',
+             'collaborators', 'tagged_releases']
+    for attr in attrs:
+        setattr(proj, attr, [])
+
+    for s in reversed(proj.statuses.order_by('-status_date')[:10]):
+        for attr in attrs:
+            getattr(proj, attr).append(getattr(s, attr, 0))
+
+    for attr in attrs:
+        setattr(proj, attr+'_max', max(getattr(proj, attr)))
+
 def index(request):
     month_ago = datetime.date.today()-datetime.timedelta(30)
     year_ago = datetime.date.today()-datetime.timedelta(365)
@@ -71,6 +84,10 @@ def index(request):
             proj_year += 1
         if proj.latest_commit > month_ago:
             active += 1
+
+        # historical data
+        _accumulate_statuses(proj)
+
     projects_total = len(projects)
 
     context =  {'projects': projects,

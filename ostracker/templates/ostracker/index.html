@@ -16,11 +16,11 @@
             <td>{{projects_year}}</td>
             <td>{{projects_month}}</td>
         </tr>
-        <tr><th>Issues</th>
+<!--        <tr><th>Issues</th>
             <td>{{issues_total}}</td>
             <td>{{issues_year}}</td>
             <td>{{issues_month}}</td>
-        </tr>
+        </tr>-->
     </tbody>
 </table>
 
@@ -46,12 +46,30 @@
     <td>{{proj.created_date}}</td>
     <td>{{proj.latest_commit}}</td>
     <td>{{proj.language}}</td>
-    <td>{{proj.latest_status.open_issues}}</td>
-    <td>{{proj.latest_status.closed_issues}}</td>
-    <td>{{proj.latest_status.forks}}</td>
-    <td>{{proj.latest_status.watchers}}</td>
-    <td>{{proj.latest_status.collaborators}}</td>
-    <td>{{proj.latest_status.tagged_releases}}</td>
+    <td class="sparkline">
+        {{proj.open_issues|last}}
+        <img src="http://chart.apis.google.com/chart?chs=80x20&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.open_issues|join:","}}&chds=0,{{proj.open_issues_max}}">
+    </td>
+    <td class="sparkline">
+        {{proj.closed_issues|last}}
+        <img src="http://chart.apis.google.com/chart?chs=80x20&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.closed_issues|join:","}}&chds=0,{{proj.closed_issues_max}}">
+    </td>
+    <td class="sparkline">
+        {{proj.forks|last}}
+        <img src="http://chart.apis.google.com/chart?chs=80x20&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.forks|join:","}}&chds=0,{{proj.forks_max}}">
+    </td>
+    <td class="sparkline">
+        {{proj.watchers|last}}
+        <img src="http://chart.apis.google.com/chart?chs=80x20&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.watchers|join:","}}&chds=0,{{proj.watchers_max}}">
+    </td>
+    <td class="sparkline">
+        {{proj.collaborators|last}}
+        <img src="http://chart.apis.google.com/chart?chs=80x20&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.collaborators|join:","}}&chds=0,{{proj.collaborators_max}}">
+    </td>
+    <td class="sparkline">
+        {{proj.tagged_releases|last}}
+        <img src="http://chart.apis.google.com/chart?chs=80x20&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.tagged_releases|join:","}}&chds=0,{{proj.tagged_releases_max}}">
+    </td>
 </tr>
 {% endfor %}
 </tbody>
@@ -60,6 +78,11 @@
 
 {% block extrahead %}
 {{ block.super }}
+
+<style type="text/css">
+    td.sparkline { min-width: 100px; }
+    td.sparkline img { float: left; }
+</style>
 
 <script type="text/javascript">
     $(document).ready(function() {

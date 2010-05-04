@@ -1,4 +1,5 @@
 import os
+import datetime
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
 from git import Repo
@@ -23,24 +24,20 @@ class Command(NoArgsCommand):
 
             # process new commits
             repo = Repo(proj_dir)
-            commits = repo.commits_since()
             added = 0
-            for c in commits:
+            for c in repo.iter_commits():
                 try:
-                    Commit.objects.get(id=c.id)
+                    Commit.objects.get(id=c.sha)
                 except Commit.DoesNotExist:
                     added += 1
                     stats = c.stats.total
 
-                    cdate = c.committed_date
-                    time = '%s-%02d-%02d %02d:%02d:%02d' % (cdate.tm_year,
-                            cdate.tm_mon, cdate.tm_mday, cdate.tm_hour,
-                            cdate.tm_min, cdate.tm_sec)
+                    cdate = datetime.datetime.fromtimestamp(c.committed_date)
 
                     author = Contributor.objects.lookup(c.author.name, c.author.email)
 
-                    Commit.objects.create(id=c.id, project=proj, author=author,
-                                          message=c.message, time_committed=time,
+                    Commit.objects.create(id=c.sha, project=proj, author=author,
+                                          message=c.message, time_committed=cdate,
                                           deletions=stats['deletions'],
                                           files=stats['files'],
                                           insertions=stats['insertions'],
