@@ -67,7 +67,9 @@ def _accumulate_statuses(proj):
             getattr(proj, attr).append(getattr(s, attr, 0))
 
     for attr in attrs:
-        setattr(proj, attr+'_max', max(getattr(proj, attr)))
+        attr_data = getattr(proj, attr)
+        setattr(proj, attr+'_max', max(attr_data)+0.5)
+        setattr(proj, attr+'_delta', attr_data[-1]-attr_data[-2])
 
 def index(request):
     month_ago = datetime.date.today()-datetime.timedelta(30)
@@ -98,44 +100,6 @@ def index(request):
 
     return render_to_response('ostracker/index.html', context,
                              context_instance=RequestContext(request))
-
-def activity(request):
-    dates = list(ProjectStatus.objects.dates('status_date', 'day'))
-    old_date = dates[-5]
-    new_date = dates[-1]
-    old_statuses = ProjectStatus.objects.filter(status_date=old_date).select_related()
-    new_statuses = ProjectStatus.objects.filter(status_date=new_date).select_related()
-
-    info = defaultdict(dict)
-    for s in new_statuses:
-        proj = s.project.name
-        info[proj]['activity'] = 0
-        info[proj]['project'] = proj
-        for k,v in s.__dict__.iteritems():
-            if k[0] != '_' and k not in ('status_date', 'project_id', 'id'):
-                info[proj]['new_' + k] = v
-                info[proj]['activity'] += v
-
-    for s in old_statuses:
-        proj = s.project.name
-        for k,v in s.__dict__.iteritems():
-            if k[0] != '_' and k not in ('status_date', 'project_id', 'id'):
-                info[proj]['new_' + k] -= v
-                info[proj]['activity'] -= v
-
-    info = [v for v in info.values() if v['activity']]
-    info.sort(key=lambda x: x['activity'], reverse=True)
-    totals = defaultdict(int)
-    for i in info:
-        for k,v in i.iteritems():
-            if k != 'project':
-                totals[k] += v
-
-    return render_to_response('ostracker/activity.html', {'activity': info,
-                                                          'totals': totals,
-                                                          'start_date': old_date,
-                                                          'end_date': new_date},
-                              context_instance=RequestContext(request))
 
 
 def project(request, name):
