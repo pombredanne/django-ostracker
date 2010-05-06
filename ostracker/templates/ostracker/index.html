@@ -10,10 +10,10 @@
 <thead>
 <tr>
     <th>Name</th>
-    <th>Created Date</th>
-    <th>Latest Commit</th>
-    <th>Open Issues</th>
-    <th>Closed Issues</th>
+    <th>Created&nbsp;Date</th>
+    <th>Latest&nbsp;Commit</th>
+    <th>Open&nbsp;Issues</th>
+    <th>Closed&nbsp;Issues</th>
     <th>Forks</th>
     <th>Watchers</th>
     <th>Collaborators</th>
@@ -60,8 +60,11 @@
 </style>
 
 <script type="text/javascript">
+    function textExtractor(node) {
+        return node.innerHTML.split('<')[0]
+    }
     $(document).ready(function() {
-        $('#projects').tablesorter();
+        $('#projects').tablesorter({'textExtraction': textExtractor});
     });
 </script> 
 {% endblock extrahead %}
