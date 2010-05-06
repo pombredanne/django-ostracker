@@ -1,27 +1,10 @@
 {% extends "ostracker/base.html" %}
+{% load ostracker_tags %}
 
-{% block title %}Summary{% endblock %}
+{% block title %}All Projects{% endblock %}
 
 {% block content %}
-<h2>Summary</h2>
-
-<table>
-    <thead>
-        <tr><th></th><th>Total</th><th>Last 365 Days</th><th>Last 30 Days</th></tr>
-    </thead>
-    <tbody>
-        <tr><th>Projects</th>
-            <td>{{projects_total}}</td>
-            <td>{{projects_year}}</td>
-            <td>{{projects_month}}</td>
-        </tr>
-<!--        <tr><th>Issues</th>
-            <td>{{issues_total}}</td>
-            <td>{{issues_year}}</td>
-            <td>{{issues_month}}</td>
-        </tr>-->
-    </tbody>
-</table>
+<h2>All Projects</h2>
 
 <table id="projects">
 <thead>
@@ -29,7 +12,6 @@
     <th>Name</th>
     <th>Created Date</th>
     <th>Latest Commit</th>
-    <th>Language</th>
     <th>Open Issues</th>
     <th>Closed Issues</th>
     <th>Forks</th>
@@ -40,40 +22,27 @@
 </thead>
 <tbody>
 {% for proj in projects %}
-<tr>
+<tr class="{% cycle 'even' 'odd' %}">
     <td><a href="{% url project proj.name %}">{{proj.name}}</a></td>
     <td>{{proj.created_date}}</td>
     <td>{{proj.latest_commit}}</td>
-    <td>{{proj.language}}</td>
     <td class="sparkline">
-        {{proj.open_issues|last}}
-        <img src="http://chart.apis.google.com/chart?chs=80x30&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.open_issues|join:","}}&chds=0,{{proj.open_issues_max}}">
-        <span class="delta">{{proj.open_issues_delta}}</span>
+        {% render_proj_variable proj.open_issues %}
     </td>
     <td class="sparkline">
-        {{proj.closed_issues|last}}
-        <img src="http://chart.apis.google.com/chart?chs=80x30&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.closed_issues|join:","}}&chds=0,{{proj.closed_issues_max}}">
-        <span class="delta">{{proj.closed_issues_delta}}</span>
+        {% render_proj_variable proj.closed_issues %}
     </td>
     <td class="sparkline">
-        {{proj.forks|last}}
-        <img src="http://chart.apis.google.com/chart?chs=80x30&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.forks|join:","}}&chds=0,{{proj.forks_max}}">
-        <span class="delta">{{proj.forks_delta}}</span>
+        {% render_proj_variable proj.forks %}
     </td>
     <td class="sparkline">
-        {{proj.watchers|last}}
-        <img src="http://chart.apis.google.com/chart?chs=80x30&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.watchers|join:","}}&chds=0,{{proj.watchers_max}}">
-        <span class="delta">{{proj.watchers_delta}}</span>
+        {% render_proj_variable proj.watchers %}
     </td>
     <td class="sparkline">
-        {{proj.collaborators|last}}
-        <img src="http://chart.apis.google.com/chart?chs=80x30&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.collaborators|join:","}}&chds=0,{{proj.collaborators_max}}">
-        <span class="delta">{{proj.collaborators_delta}}</span>
+        {% render_proj_variable proj.collaborators %}
     </td>
     <td class="sparkline">
-        {{proj.tagged_releases|last}}
-        <img src="http://chart.apis.google.com/chart?chs=80x30&cht=ls&chco=000099&chf=bg,s,00000000&chls=1,0,0&chd=t:{{proj.tagged_releases|join:","}}&chds=0,{{proj.tagged_releases_max}}">
-        <span class="delta">{{proj.tagged_releases_delta}}</span>
+        {% render_proj_variable proj.tagged_releases %}
     </td>
 </tr>
 {% endfor %}

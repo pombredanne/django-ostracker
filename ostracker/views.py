@@ -66,37 +66,12 @@ def _accumulate_statuses(proj):
         for attr in attrs:
             getattr(proj, attr).append(getattr(s, attr, 0))
 
-    for attr in attrs:
-        attr_data = getattr(proj, attr)
-        setattr(proj, attr+'_max', max(attr_data)+0.5)
-        setattr(proj, attr+'_delta', attr_data[-1]-attr_data[-2])
-
 def index(request):
-    month_ago = datetime.date.today()-datetime.timedelta(30)
-    year_ago = datetime.date.today()-datetime.timedelta(365)
-
-    active = 0
-    proj_month = 0
-    proj_year = 0
     projects = list(Project.objects.all().order_by('name'))
     for proj in projects:
-        if proj.created_date > month_ago:
-            proj_month += 1
-        if proj.created_date > year_ago:
-            proj_year += 1
-        if proj.latest_commit > month_ago:
-            active += 1
-
-        # historical data
         _accumulate_statuses(proj)
 
-    projects_total = len(projects)
-
-    context =  {'projects': projects,
-                'projects_total': projects_total,
-                'projects_month': proj_month,
-                'projects_year': proj_year,
-               }
+    context =  {'projects': projects }
 
     return render_to_response('ostracker/index.html', context,
                              context_instance=RequestContext(request))
