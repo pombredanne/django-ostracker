@@ -41,21 +41,6 @@ def cumulative_by_date(model, datefield):
 
     return cumulative[1:]
 
-def summary(request):
-    by_lang = defaultdict(int)
-    projects = Project.objects.all().order_by('name')
-    for proj in projects:
-        by_lang[proj.language] += 1
-
-    cumulative = cumulative_by_date(Project, 'created_date')
-
-    context =  {'projects': projects, 'cumulative':cumulative,
-                'by_lang':dict(by_lang)}
-    context.update(_get_statuses(ProjectStatus.objects.all()))
-
-    return render_to_response('ostracker/summary.html', context,
-                             context_instance=RequestContext(request))
-
 def _accumulate_statuses(proj):
     attrs = ['open_issues', 'closed_issues', 'forks', 'watchers',
              'collaborators', 'tagged_releases']
@@ -67,11 +52,17 @@ def _accumulate_statuses(proj):
             getattr(proj, attr).append(getattr(s, attr, 0))
 
 def index(request):
+    by_lang = defaultdict(int)
     projects = list(Project.objects.all().order_by('name'))
     for proj in projects:
         _accumulate_statuses(proj)
+        by_lang[proj.language] += 1
 
-    context =  {'projects': projects }
+    cumulative = cumulative_by_date(Project, 'created_date')
+
+    context =  {'projects': projects, 'cumulative':cumulative,
+                'by_lang':dict(by_lang)}
+    context.update(_get_statuses(ProjectStatus.objects.all()))
 
     return render_to_response('ostracker/index.html', context,
                              context_instance=RequestContext(request))
