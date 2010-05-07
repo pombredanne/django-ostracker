@@ -41,22 +41,22 @@ class Project(models.Model):
         return self._latest_status
 
     def get_remote_repo_url(self):
-        remote_paths = {'github':'git://github.com/%(username)s/%(name)s.git'}
+        remote_paths = {'github':'git://github.com/%(host_username)s/%(name)s.git'}
 
         path = remote_paths.get(self.host_site, None)
         if path:
             return path % self.__dict__
 
     def get_host_url(self):
-        urls = {'github': 'http://github.com/%(username)s/%(name)s/'}
+        urls = {'github': 'http://github.com/%(host_username)s/%(name)s/'}
 
         url = urls.get(self.host_site, None)
         if url:
             return url % self.__dict__
 
     def get_local_repo_dir(self):
-        return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.username or '',
-                            self.name)
+        return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.host_username
+                            or '', self.name)
 
 
 class ProjectStatus(models.Model):
