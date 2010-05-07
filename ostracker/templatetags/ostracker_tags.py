@@ -18,16 +18,19 @@ def scaled_bar_chart(w, h, data):
     return template % variables
 
 @register.simple_tag
-def scaled_line_chart(w, h, data):
-    template = '''<img src="http://chart.apis.google.com/chart?cht=lc&chs=%(w)sx%(h)s&chd=t:%(vals)s&chco=%(color)s&chyr=0,0,%(max)s,1&chys=0,%(max)s&chxt=y">'''
+def bug_chart(w, h, data):
+    template = '''<img src="http://chart.apis.google.com/chart?cht=lc&chs=%(w)sx%(h)s&chd=t:%(vals)s&chco=009900,990000&chxr=0,0,%(max)s&chds=0,%(max)s&chxt=y&chm=B,00990055,0,1,0|b,99000055,0,1,0|N,009900,0,%(n)s,12|N,990000,1,%(n)s,12">'''
 
-    vals = '|'.join(','.join(str(x) for x in dataset)
-                    for dataset in data.values())
+    closed = data['closed']
+    print data['closed'][0], data['open'][0]
+    total = [x+y for x,y in zip(data['closed'], data['open'])]
 
-    max_val = max(reduce(operator.add, data.values()))
+    vals = ','.join(str(x) for x in closed) + '|' + ','.join(str(x) for x in total)
+
+    max_val = max(total)
     variables = {
-        'w': w, 'h': h,
-        'color': '009900',
+        'w': w, 'h': h, 'n': len(vals),
+        'color': '009900,990000',
         'vals': vals,
 #        'labels': '|'.join(data.keys()),
         'max': max_val,
