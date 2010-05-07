@@ -1,0 +1,6 @@
+
+Project
+    rename username to host_username
+    add slug
+    drop url in favor of get_host_url method
+

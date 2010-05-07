@@ -26,8 +26,8 @@ class Command(BaseCommand):
                 latest_commit = gh.commits.get_commits(username, repo.name)[0].committed_date[:10]
 
                 p, created = Project.objects.get_or_create(name=repo.name,
-                                                           username=username,
-                                                           url=repo.url,
+                                                           slug=repo.name,
+                                                           host_username=username,
                               defaults={'description':repo.description,
                                         'latest_commit':latest_commit,
                                         'created_date':'2000-01-01',

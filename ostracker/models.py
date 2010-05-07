@@ -10,13 +10,25 @@ PROJECT_HOSTS = (
 
 class Project(models.Model):
     name = models.CharField(max_length=100)
-    username = models.CharField(max_length=100, blank=True)
+    slug = models.SlugField(max_length=50, unique=True)
+
+    description = models.TextField()
+    language = models.CharField(max_length=30)
+
     host_site = models.CharField(max_length=10)
-    description = models.CharField(max_length=200)
-    url = models.URLField()
+    host_username = models.CharField(max_length=100, blank=True)
+
     latest_commit = models.DateField()
     created_date = models.DateField(default=datetime.datetime.now)
-    language = models.CharField(max_length=30)
+
+    class Meta:
+        ordering = ['-created_date']
+
+    def __unicode__(self):
+        if self.host_username:
+            return '/'.join((self.host_username, self.name))
+        else:
+            return self.name
 
     @property
     def latest_status(self):
@@ -35,15 +47,16 @@ class Project(models.Model):
         if path:
             return path % self.__dict__
 
+    def get_host_url(self):
+        urls = {'github': 'http://github.com/%(username)s/%(name)s/'}
+
+        url = urls.get(self.host_site, None)
+        if url:
+            return url % self.__dict__
+
     def get_local_repo_dir(self):
         return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.username or '',
                             self.name)
-
-    def __unicode__(self):
-        if self.username:
-            return '/'.join((self.username, self.name))
-        else:
-            return self.name
 
 
 class ProjectStatus(models.Model):
