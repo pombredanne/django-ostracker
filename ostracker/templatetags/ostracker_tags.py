@@ -19,15 +19,13 @@ def scaled_bar_chart(w, h, data):
 
 @register.simple_tag
 def bug_chart(w, h, data):
-    template = '''<img src="http://chart.apis.google.com/chart?cht=lc&chs=%(w)sx%(h)s&chd=t:%(vals)s&chco=009900,990000&chxr=0,0,%(max)s&chds=0,%(max)s&chxt=y&chm=B,00990055,0,1,0|b,99000055,0,1,0|N,009900,0,%(n)s,12|N,990000,1,%(n)s,12">'''
+    template = '''<img src="http://chart.apis.google.com/chart?cht=bvs&chs=%(w)sx%(h)s&chd=t:%(vals)s&chco=009900,990000&chxr=0,0,%(max)s&chds=0,%(max)s&chxt=y&chm=N,000000,0,-1,12|N,000000,1,-1,12&chbh=a,5,0&chdlp=b&chdl=open|closed">'''
 
-    closed = data['closed']
-    print data['closed'][0], data['open'][0]
+    vals = ','.join(str(x) for x in data['closed']) + '|' + ','.join(str(x) for x in data['open'])
+
     total = [x+y for x,y in zip(data['closed'], data['open'])]
-
-    vals = ','.join(str(x) for x in closed) + '|' + ','.join(str(x) for x in total)
-
     max_val = max(total)
+
     variables = {
         'w': w, 'h': h, 'n': len(vals),
         'color': '009900,990000',
