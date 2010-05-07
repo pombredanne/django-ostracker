@@ -27,11 +27,27 @@ def bug_chart(w, h, data):
     max_val = max(total)
 
     variables = {
-        'w': w, 'h': h, 'n': len(vals),
-        'color': '009900,990000',
+        'w': w, 'h': h,
         'vals': vals,
-#        'labels': '|'.join(data.keys()),
         'max': max_val,
+    }
+
+    return template % variables
+
+@register.simple_tag
+def line_chart(w, h, data):
+    template = '''<img src="http://chart.apis.google.com/chart?cht=lc&chs=%(w)sx%(h)s&chd=t:%(vals)s&chco=5500cc,cc5500,00cc55&chxr=0,0,%(max)s&chds=0,%(max)s&chxt=y&chbh=a,5,0&chdlp=b&chdl=%(labels)s&chm=N,000000,0,%(n)s,12|N,000000,1,%(n)s,12|N,000000,2,%(n)s,12">'''
+
+    vals = '|'.join(','.join(str(x) for x in dataset) for dataset in data.values())
+
+    total = reduce(operator.add, data.values())
+    max_val = max(total)
+
+    variables = {
+        'w': w, 'h': h, 'n': len(data.values()[0]),
+        'vals': vals,
+        'max': max_val,
+        'labels': '|'.join(data.keys()),
     }
 
     return template % variables
