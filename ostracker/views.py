@@ -64,6 +64,9 @@ def index(request):
                 'by_lang':dict(by_lang)}
     context.update(_get_statuses(ProjectStatus.objects.all()))
 
+    context['issues'] = {'open': context['open_issues'],
+                         'closed': context['closed_issues']}
+
     return render_to_response('ostracker/index.html', context,
                              context_instance=RequestContext(request))
 
