@@ -5,13 +5,13 @@ register = template.Library()
 
 @register.simple_tag
 def scaled_bar_chart(w, h, data):
-    template = '''<img src="http://chart.apis.google.com/chart?cht=bhs&chs=%(w)sx%(h)s&chd=t:%(vals)s&chco=%(color)s&chxr=0,0,%(max)s,1&chds=0,%(max)s&chxt=x,y&chxl=1:|%(labels)s">'''
+    template = '''<img src="http://chart.apis.google.com/chart?cht=bhs&chs=%(w)sx%(h)s&chd=t:%(vals)s&chco=%(color)s&chxr=0,0,%(max)s&chds=0,%(max)s&chxt=x,y&chxl=1:|%(labels)s&chm=N,000000,0,-1,12">'''
 
     variables = {
         'w': w, 'h': h,
         'color': '009900',
         'vals': ','.join(str(x) for x in data.values()),
-        'labels': '|'.join(data.keys()),
+        'labels': '|'.join(reversed(data.keys())),
         'max': max(data.values())
     }
 
