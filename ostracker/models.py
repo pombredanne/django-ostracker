@@ -120,3 +120,15 @@ class Commit(models.Model):
 
     def __unicode__(self):
         return '%s: %s' % (self.id, self.message)
+
+class Issue(models.Model):
+    project = models.ForeignKey(Project, related_name='issues')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    reported_by = models.CharField(max_length=100)
+    state = models.CharField(max_length=20)
+    votes = models.PositiveIntegerField()
+    created_date = models.DateField()
+
+    def __unicode__(self):
+        return self.title
