@@ -60,9 +60,16 @@ def index(request):
 
     cumulative = cumulative_by_date(Project, 'created_date')
 
-    context =  {'projects': projects, 'cumulative':cumulative,
+    context =  {'projects': projects,
                 'by_lang':dict(by_lang)}
-    context.update(_get_statuses(ProjectStatus.objects.all()))
+
+    statuses = _get_statuses(ProjectStatus.objects.all())
+    context['issues'] = {'open': statuses['open_issues'],
+                         'closed': statuses['closed_issues']}
+    context['people'] = {'forks': statuses['forks'],
+                         'collaborators': statuses['collaborators'],
+                         'watchers': statuses['watchers'],
+                        }
 
     return render_to_response('ostracker/index.html', context,
                              context_instance=RequestContext(request))
