@@ -17,18 +17,18 @@ class Command(NoArgsCommand):
             if not last_status or (datetime.date.today() - last_status.status_date) >= datetime.timedelta(SAMPLE_RATE):
 
                 try:
-                    repo = gh.repos.get(p.host_username, p.name)
+                    repo = gh.repos.get(p.host_username, p.slug)
                 except GithubApiError:
                     print 'error getting repository %s' % p
                     continue
 
                 # add a ProjectStatus for this project
-                collaborators = gh.repos.get_collaborators(p.host_username, p.name)
+                collaborators = gh.repos.get_collaborators(p.host_username, p.slug)
                 num_collaborators = len(collaborators) - 1
-                num_releases = len(gh.repos.get_tags(p.host_username, p.name))
+                num_releases = len(gh.repos.get_tags(p.host_username, p.slug))
 
-                closed_issues = gh.issues.get_issues(p.host_username, p.name, False)
-                open_issues = gh.issues.get_issues(p.host_username, p.name, True)
+                closed_issues = gh.issues.get_issues(p.host_username, p.slug, False)
+                open_issues = gh.issues.get_issues(p.host_username, p.slug, True)
 
                 # go through all issues at once
                 for i in itertools.chain(open_issues, closed_issues):

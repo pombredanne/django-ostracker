@@ -56,7 +56,7 @@ class Project(models.Model):
 
     def get_local_repo_dir(self):
         return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.host_username
-                            or '', self.name)
+                            or '', self.slug)
 
 
 class ProjectStatus(models.Model):

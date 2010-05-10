@@ -69,8 +69,8 @@ def index(request):
                              context_instance=RequestContext(request))
 
 
-def project(request, name):
-    project = get_object_or_404(Project, name=name)
+def project(request, slug):
+    project = get_object_or_404(Project, slug=slug)
 
     context = {'project': project}
     context.update(_get_statuses(project.statuses))

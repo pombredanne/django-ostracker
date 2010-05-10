@@ -33,7 +33,7 @@
 <tbody>
 {% for proj in projects %}
 <tr class="{% cycle 'even' 'odd' %}">
-    <td><a href="{% url ostracker_project proj.name %}">{{proj.name}}</a></td>
+    <td><a href="{% url ostracker_project proj.slug %}">{{proj.name}}</a></td>
     <td>{{proj.created_date}}</td>
     <td>{{proj.latest_commit}}</td>
     <td class="sparkline">
