@@ -2,6 +2,16 @@
 django-ostracker changelog
 ==========================
 
+0.3.0
+=====
+    - remove Highcharts dependency
+    - add issue tracking
+    - change Project model:
+        - rename username to host_username
+        - add slug
+        - drop url in favor of get_host_url method
+
+
 0.2.0
 =====
     - make fewer assumptions that all projects use github
