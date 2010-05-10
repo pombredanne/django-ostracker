@@ -1,4 +1,5 @@
 {% extends "ostracker/base.html" %}
+{% load ostracker_tags %}
 
 {% block content %}
 
@@ -12,64 +13,8 @@
     <dt>Latest Commit</dt> <dd>{{project.latest_commit}}</dd>
 </dl>
 
-<div id="issues" style="width: 600px; height:300px;"> </div>
+{% bug_chart 400 200 issues %}
 
-<div id="people" style="width: 600px; height:300px;"> </div>
+{% line_chart 400 200 people %}
 
-{% endblock %}
-
-{% block extrahead %}
-
-{{ block.super }}
-
-<script>
-$(document).ready(function() {
-
-var chart = new Highcharts.Chart({
-   chart: { renderTo: 'issues', defaultSeriesType: 'area' },
-   title: { text: 'Issues' },
-   xAxis: { categories: {{status_dates|safe}}, tickmarkPlacement: 'on', title: { enabled: false } },
-   yAxis: { title: { enabled: false }, labels: { formatter: function() { return this.value; } } },
-   tooltip: {
-      formatter: function() {
-         return '<b>'+ this.series.name +'</b><br/>'+
-             this.x +': '+ Highcharts.numberFormat(this.y, 0, ',');
-      }
-   },
-   plotOptions: {
-      area: {
-         stacking: 'normal', lineColor: '#666666', lineWidth: 1,
-         marker: {
-            lineWidth: 1,
-            lineColor: '#666666'
-         }
-      }
-   },
-   series: [
-       { name: 'open issues', data: {{open_issues}} },
-       { name: 'closed issues', data: {{closed_issues}} }
-   ]
-});
-
-var chart2 = new Highcharts.Chart({
-   chart: { renderTo: 'people', defaultSeriesType: 'line', margin: [50, 150, 60, 80] },
-   title: { text: 'People', style: { margin: '10px 100px 0 0' } },
-   xAxis: { categories: {{status_dates|safe}}, title: { text: 'Month' } },
-   yAxis: { plotLines: [{ value: 0, width: 1, color: '#808080' }] },
-   tooltip: {
-      formatter: function() {
-                return '<b>'+ this.series.name +'</b><br/>'+ this.x +': '+ this.y;
-      }
-   },
-   legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', right: '10px', top: '100px' } },
-   series: [
-       { name: 'forks', data: {{forks}} },
-       { name: 'watchers', data: {{watchers}} },
-       { name: 'collaborators', data: {{collaborators}} }
-   ]
-});
-
-});
-
-</script>
 {% endblock %}
