@@ -11,19 +11,21 @@ def _get_statuses(qs):
         open=Sum('open_issues'), closed=Sum('closed_issues'),
         forks=Sum('forks'), watchers=Sum('watchers'),
         collaborators=Sum('collaborators')).order_by('status_date')
-    c['open_issues'] = []
-    c['closed_issues'] = []
-    c['forks'] = []
-    c['watchers'] = []
-    c['collaborators'] = []
-    c['status_dates'] = []
+    open_issues = []
+    closed_issues = []
+    forks = []
+    watchers = []
+    collaborators = []
     for s in statuses:
-        c['status_dates'].append(s['status_date'].strftime('%m/%d'))
-        c['open_issues'].append(s['open'])
-        c['closed_issues'].append(s['closed'])
-        c['forks'].append(s['forks'])
-        c['watchers'].append(s['watchers'])
-        c['collaborators'].append(s['collaborators'])
+        open_issues.append(s['open'])
+        closed_issues.append(s['closed'])
+        forks.append(s['forks'])
+        watchers.append(s['watchers'])
+        collaborators.append(s['collaborators'])
+
+    c['issues'] = {'open': open_issues, 'closed': closed_issues}
+    c['people'] = {'forks': forks, 'collaborators': collaborators,
+                   'watchers': watchers, }
     return c
 
 def cumulative_by_date(model, datefield):
@@ -58,18 +60,10 @@ def index(request):
         _accumulate_statuses(proj)
         by_lang[proj.language] += 1
 
-    cumulative = cumulative_by_date(Project, 'created_date')
+    #cumulative = cumulative_by_date(Project, 'created_date')
 
-    context =  {'projects': projects,
-                'by_lang':dict(by_lang)}
-
-    statuses = _get_statuses(ProjectStatus.objects.all())
-    context['issues'] = {'open': statuses['open_issues'],
-                         'closed': statuses['closed_issues']}
-    context['people'] = {'forks': statuses['forks'],
-                         'collaborators': statuses['collaborators'],
-                         'watchers': statuses['watchers'],
-                        }
+    context =  {'projects': projects, 'by_lang':dict(by_lang)}
+    context.update(_get_statuses(ProjectStatus.objects.all()))
 
     return render_to_response('ostracker/index.html', context,
                              context_instance=RequestContext(request))
