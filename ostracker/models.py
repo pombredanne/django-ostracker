@@ -136,6 +136,7 @@ class Commit(models.Model):
 
 class Issue(models.Model):
     project = models.ForeignKey(Project, related_name='issues')
+    tracker_id = models.PositiveIntegerField()
     title = models.CharField(max_length=200)
     description = models.TextField()
     reported_by = models.CharField(max_length=100)
@@ -143,5 +144,15 @@ class Issue(models.Model):
     votes = models.PositiveIntegerField()
     created_date = models.DateField()
 
+    class Meta:
+        ordering = ['state', 'created_date']
+
     def __unicode__(self):
         return self.title
+
+    def get_host_url(self):
+        github_url = 'http://github.com/%(host_username)s/%(project)s/issues/issue/%(tracker_id)s'
+
+        return github_url % {'host_username':self.project.host_username,
+                             'project': self.project.slug,
+                             'tracker_id': self.tracker_id}

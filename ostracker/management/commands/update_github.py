@@ -1,7 +1,7 @@
-import time, datetime
+import time, datetime, itertools
 from django.core.management.base import NoArgsCommand
 from ostracker.github import Github, GithubApiError
-from ostracker.models import Project, ProjectStatus
+from ostracker.models import Project, ProjectStatus, Issue
 
 SAMPLE_RATE = 7
 GITHUB_REST = 5
@@ -25,13 +25,33 @@ class Command(NoArgsCommand):
                 # add a ProjectStatus for this project
                 collaborators = gh.repos.get_collaborators(p.host_username, p.name)
                 num_collaborators = len(collaborators) - 1
-                closed_issues = len([i for i in gh.issues.get_issues(p.host_username, p.name, False) if (i.user not in collaborators)])
-                open_issues = len([i for i in gh.issues.get_issues(p.host_username, p.name, True) if (i.user not in collaborators)])
                 num_releases = len(gh.repos.get_tags(p.host_username, p.name))
 
+                closed_issues = gh.issues.get_issues(p.host_username, p.name, False)
+                open_issues = gh.issues.get_issues(p.host_username, p.name, True)
+
+                # go through all issues at once
+                for i in itertools.chain(open_issues, closed_issues):
+                    issue, created = Issue.objects.get_or_create(project=p,
+                             tracker_id=i.number, defaults={
+                                 'title': i.title,
+                                 'description': i.body,
+                                 'reported_by': i.user,
+                                 'state': i.state,
+                                 'votes': i.votes,
+                                 'created_date': i.created_at[:10].replace('/','-')})
+                    if not created and i.state != issue.state:
+                        issue.state = i.state
+                        issue.save()
+
+
+                # could be done inside the loop, but these aren't long to loop back over
+                num_closed_issues = len([i for i in closed_issues if (i.user not in collaborators)])
+                num_open_issues = len([i for i in open_issues if (i.user not in collaborators)])
+
                 ProjectStatus.objects.create(project = p,
-                    open_issues = open_issues,
-                    closed_issues = closed_issues,
+                    open_issues = num_open_issues,
+                    closed_issues = num_closed_issues,
                     forks = repo.forks,
                     watchers = repo.watchers,
                     collaborators = num_collaborators,

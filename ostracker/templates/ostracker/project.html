@@ -9,11 +9,21 @@
 
 <dl>
     <dt>Description</dt> <dd>{{project.description}}</dd>
-    <dt>URL</dt> <dd><a href="{{project.url}}">{{project.url}}</a></dd>
+    <dt>URL</dt> <dd><a href="{{project.url}}">{{project.get_host_url}}</a></dd>
     <dt>Latest Commit</dt> <dd>{{project.latest_commit}}</dd>
 </dl>
 
+<h3> Issues </h3>
 {% bug_chart 400 200 issues %}
+
+<table>
+    <tr><th>Title</th><th>State</th></tr>
+    {% for issue in project.issues.all.select_related %}
+        <tr>
+            <td><a href="{{issue.get_host_url}}">{{issue.title}}</a></td><td>{{issue.state}}</td>
+        </tr>
+    {% endfor %}
+</table>
 
 {% line_chart 400 200 people %}
 
