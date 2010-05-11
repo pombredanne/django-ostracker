@@ -1,61 +1,15 @@
-import time, datetime, itertools
+import datetime
 from django.core.management.base import NoArgsCommand
-from ostracker.github import Github, GithubApiError
-from ostracker.models import Project, ProjectStatus, Issue
+from ostracker.models import Project
 
-SAMPLE_RATE = 7
-GITHUB_REST = 5
+SAMPLE_RATE = 1
 
 class Command(NoArgsCommand):
-    help = 'Updates latest project information from github'
+    help = 'Updates latest project information'
 
     def handle_noargs(self, **options):
-        gh = Github()
 
-        for p in Project.objects.filter(host_site='github'):
+        for p in Project.objects.exclude(host_site='none'):
             last_status = p.latest_status
             if not last_status or (datetime.date.today() - last_status.status_date) >= datetime.timedelta(SAMPLE_RATE):
-
-                try:
-                    repo = gh.repos.get(p.host_username, p.slug)
-                except GithubApiError:
-                    print 'error getting repository %s' % p
-                    continue
-
-                # add a ProjectStatus for this project
-                collaborators = gh.repos.get_collaborators(p.host_username, p.slug)
-                num_collaborators = len(collaborators) - 1
-                num_releases = len(gh.repos.get_tags(p.host_username, p.slug))
-
-                closed_issues = gh.issues.get_issues(p.host_username, p.slug, False)
-                open_issues = gh.issues.get_issues(p.host_username, p.slug, True)
-
-                # go through all issues at once
-                for i in itertools.chain(open_issues, closed_issues):
-                    issue, created = Issue.objects.get_or_create(project=p,
-                             tracker_id=i.number, defaults={
-                                 'title': i.title,
-                                 'description': i.body,
-                                 'reported_by': i.user,
-                                 'state': i.state,
-                                 'votes': i.votes,
-                                 'created_date': i.created_at[:10].replace('/','-')})
-                    if not created and i.state != issue.state:
-                        issue.state = i.state
-                        issue.save()
-
-
-                # could be done inside the loop, but these aren't long to loop back over
-                num_closed_issues = len([i for i in closed_issues if (i.user not in collaborators)])
-                num_open_issues = len([i for i in open_issues if (i.user not in collaborators)])
-
-                ProjectStatus.objects.create(project = p,
-                    open_issues = num_open_issues,
-                    closed_issues = num_closed_issues,
-                    forks = repo.forks,
-                    watchers = repo.watchers,
-                    collaborators = num_collaborators,
-                    tagged_releases = num_releases)
-                print 'getting latest status for %s' % p
-
-            time.sleep(GITHUB_REST)
+                p.host_object.update_project(p)

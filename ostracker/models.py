@@ -2,6 +2,7 @@ import datetime
 import os
 from django.conf import settings
 from django.db import models
+from ostracker.backends.github import GithubHost
 
 PROJECT_STATUSES = (
     ('private', 'Private'),
@@ -13,20 +14,6 @@ PROJECT_HOSTS = (
     ('none', 'none'),
     ('github', 'github'),
 )
-
-class GithubHost(object):
-    def get_remote_repo_url(project):
-        return 'git://github.com/%(host_username)s/%(slug)s.git' % project.__dict__
-
-    def get_host_url(project):
-        return 'http://github.com/%(host_username)s/%(slug)s/' % project.__dict__
-
-    def get_issue_url(issue):
-        url = 'http://github.com/%(host_username)s/%(project)s/issues/issue/%(tracker_id)s'
-
-        return url % {'host_username':issue.project.host_username,
-                      'project': issue.project.slug,
-                      'tracker_id': issue.tracker_id}
 
 class ProjectManager(models.Manager):
     def all_public(self):
@@ -75,10 +62,10 @@ class Project(models.Model):
         return GithubHost()
 
     def get_remote_repo_url(self):
-        self.host_object.get_remote_repo_url(self)
+        return self.host_object.get_remote_repo_url(self)
 
     def get_host_url(self):
-        self.host_object.get_host_url(self)
+        return self.host_object.get_host_url(self)
 
     def get_local_repo_dir(self):
         return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.host_username
