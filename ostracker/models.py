@@ -14,6 +14,20 @@ PROJECT_HOSTS = (
     ('github', 'github'),
 )
 
+class GithubHost(object):
+    def get_remote_repo_url(project):
+        return 'git://github.com/%(host_username)s/%(slug)s.git' % project.__dict__
+
+    def get_host_url(project):
+        return 'http://github.com/%(host_username)s/%(slug)s/' % project.__dict__
+
+    def get_issue_url(issue):
+        url = 'http://github.com/%(host_username)s/%(project)s/issues/issue/%(tracker_id)s'
+
+        return url % {'host_username':issue.project.host_username,
+                      'project': issue.project.slug,
+                      'tracker_id': issue.tracker_id}
+
 class ProjectManager(models.Manager):
     def all_public(self):
         return self.get_query_set().exclude(status='private')
@@ -56,19 +70,15 @@ class Project(models.Model):
             self._latest_status = status
         return self._latest_status
 
-    def get_remote_repo_url(self):
-        remote_paths = {'github':'git://github.com/%(host_username)s/%(name)s.git'}
+    @property
+    def host_object(self):
+        return GithubHost()
 
-        path = remote_paths.get(self.host_site, None)
-        if path:
-            return path % self.__dict__
+    def get_remote_repo_url(self):
+        self.host_object.get_remote_repo_url(self)
 
     def get_host_url(self):
-        urls = {'github': 'http://github.com/%(host_username)s/%(name)s/'}
-
-        url = urls.get(self.host_site, None)
-        if url:
-            return url % self.__dict__
+        self.host_object.get_host_url(self)
 
     def get_local_repo_dir(self):
         return os.path.join(settings.OSTRACKER_PROJECT_DIR, self.host_username
@@ -167,8 +177,4 @@ class Issue(models.Model):
         return self.title
 
     def get_host_url(self):
-        github_url = 'http://github.com/%(host_username)s/%(project)s/issues/issue/%(tracker_id)s'
-
-        return github_url % {'host_username':self.project.host_username,
-                             'project': self.project.slug,
-                             'tracker_id': self.tracker_id}
+        self.project.host_object.get_issue_url(self)
