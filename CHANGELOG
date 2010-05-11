@@ -11,6 +11,7 @@ django-ostracker changelog
         - add slug
         - drop url in favor of get_host_url method
         - add enabled field
+    - add configurable backend support
 
 0.2.0
 =====

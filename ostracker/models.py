@@ -2,7 +2,7 @@ import datetime
 import os
 from django.conf import settings
 from django.db import models
-from ostracker.backends.github import GithubHost
+from ostracker.backends import PROJECT_BACKENDS
 
 PROJECT_STATUSES = (
     ('private', 'Private'),
@@ -10,10 +10,7 @@ PROJECT_STATUSES = (
     ('featured', 'Featured'),
 )
 
-PROJECT_HOSTS = (
-    ('none', 'none'),
-    ('github', 'github'),
-)
+PROJECT_HOSTS = [(b, b) for b in PROJECT_BACKENDS]
 
 class ProjectManager(models.Manager):
     def all_public(self):
@@ -59,7 +56,7 @@ class Project(models.Model):
 
     @property
     def host_object(self):
-        return GithubHost()
+        return PROJECT_BACKENDS[self.host_site]
 
     def get_remote_repo_url(self):
         return self.host_object.get_remote_repo_url(self)
