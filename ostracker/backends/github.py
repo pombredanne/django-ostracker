@@ -1,5 +1,6 @@
-import time, itertools
+import os, time, itertools, datetime
 from ostracker.github import Github, GithubApiError
+from git import Repo
 
 class GithubHost(object):
     def get_remote_repo_url(self, project):
@@ -16,9 +17,9 @@ class GithubHost(object):
                       'tracker_id': issue.tracker_id}
 
     def update_project(self, project):
+        from ostracker.models import ProjectStatus, Issue
         GITHUB_REST = 5
         gh = Github()
-        from ostracker.models import ProjectStatus, Issue
 
         try:
             repo = gh.repos.get(project.host_username, project.slug)
@@ -63,3 +64,37 @@ class GithubHost(object):
 
         time.sleep(GITHUB_REST)
 
+    def update_repo(self, project):
+        from ostracker.models import Commit, Contributor
+        proj_dir = project.get_local_repo_dir()
+
+        # checkout or update project
+        if not os.path.exists(proj_dir):
+            print 'cloning %s' % project
+            os.system('git clone -q %s %s' % (project.get_remote_repo_url(),
+                                              proj_dir))
+        else:
+            print 'updating %s' % project
+            os.system('cd %s && git pull -q' % proj_dir)
+
+        # process new commits
+        repo = Repo(proj_dir)
+        added = 0
+        for c in repo.iter_commits():
+            try:
+                Commit.objects.get(id=c.sha)
+            except Commit.DoesNotExist:
+                added += 1
+                stats = c.stats.total
+
+                cdate = datetime.datetime.fromtimestamp(c.committed_date)
+
+                author = Contributor.objects.lookup(c.author.name, c.author.email)
+
+                Commit.objects.create(id=c.sha, project=project, author=author,
+                                      message=c.message, time_committed=cdate,
+                                      deletions=stats['deletions'],
+                                      files=stats['files'],
+                                      insertions=stats['insertions'],
+                                      lines=stats['lines'])
+        print 'added %s commits to %s' % (added, project)
