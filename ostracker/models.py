@@ -3,19 +3,35 @@ import os
 from django.conf import settings
 from django.db import models
 
+PROJECT_STATUSES = (
+    ('private', 'Private'),
+    ('public', 'Public'),
+    ('featured', 'Featured'),
+)
+
 PROJECT_HOSTS = (
     ('none', 'none'),
     ('github', 'github'),
 )
 
+class ProjectManager(models.Manager):
+    def all_public(self):
+        return self.get_query_set().exclude(status='private')
+    def featured(self):
+        return self.get_query_set().filter(status='featured')
+
 class Project(models.Model):
+    objects = ProjectManager()
+
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=50, unique=True)
+    status = models.CharField(max_length=10, default='public',
+                              choices=PROJECT_STATUSES)
 
     description = models.TextField()
     language = models.CharField(max_length=30)
 
-    host_site = models.CharField(max_length=10)
+    host_site = models.CharField(max_length=10, choices=PROJECT_HOSTS)
     host_username = models.CharField(max_length=100, blank=True)
 
     latest_commit = models.DateField()
